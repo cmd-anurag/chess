@@ -45,7 +45,7 @@ public class InputManagerScript : MonoBehaviour
             selectedPiece = hitPiece;
             HighlightPiece(selectedPiece);
             Transform piecePosition = selectedPiece.GetComponent<PieceInterface>().CurrentSquare;
-            Debug.Log($"{selectedPiece.name} selected on {piecePosition.name}");
+            // Debug.Log($"{selectedPiece.name} selected on {piecePosition.name}");
         }
         else  {
             ResetHightlight(selectedPiece);
@@ -56,7 +56,7 @@ public class InputManagerScript : MonoBehaviour
     void HandleSquareSelection(Transform hitSquare) {
         if(selectedPiece) {
             targetSquare = hitSquare;
-            Debug.Log("Target Square is " + targetSquare.name + selectedPiece);
+            // Debug.Log("Target Square is " + targetSquare.name + selectedPiece);
             PieceInterface pieceInterface = selectedPiece.GetComponent<PieceInterface>();
             pieceInterface.MovePiece(selectedPiece.transform, targetSquare.transform);
             ResetHightlight(selectedPiece);

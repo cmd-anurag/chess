@@ -19,6 +19,9 @@ public class KnightScript : MonoBehaviour, PieceInterface
     }
     public bool MovePiece(Transform piece, Transform targetSquare) {
         piece.transform.position = targetSquare.position;
+        PieceInterface pieceInterface = piece.GetComponent<PieceInterface>();
+        Debug.Log($"{piece.name} moved from {pieceInterface.CurrentSquare} to {targetSquare}");
+        pieceInterface.CurrentSquare = targetSquare;
         return true;
     }
 }

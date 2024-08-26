@@ -98,7 +98,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec70d9e09d5776647939942575aa7b33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isWhite: 0
 --- !u!61 &1394937776175505865
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -142,5 +141,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.27, y: 1.28}
+  m_Size: {x: 1.86, y: 1.86}
   m_EdgeRadius: 0

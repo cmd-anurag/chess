@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class InputManagerScript : MonoBehaviour
 {
     public LayerMask piecesLayer;
     public LayerMask boardLayer;
+    // TODO - Use the tag instead of public fields for GameLogicManager and its script.
+    [SerializeField]private GameObject gameLogicManager;
+    private GameLogicManagerScript gameLogicManagerScript;
+    
     private GameObject selectedPiece = null;
     private Transform targetSquare = null;
     // Start is called before the first frame update
@@ -13,7 +18,7 @@ public class InputManagerScript : MonoBehaviour
     {
         boardLayer = LayerMask.GetMask("Board");
         piecesLayer = LayerMask.GetMask("Pieces");
-        
+        gameLogicManagerScript = gameLogicManager.GetComponent<GameLogicManagerScript>();
     }
 
     // Update is called once per frame
@@ -28,8 +33,10 @@ public class InputManagerScript : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hitPiece = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, piecesLayer);
             RaycastHit2D hitSquare = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, boardLayer);
+            
 
             if(hitPiece.collider != null) {
+
                 HandlePieceSelection(hitPiece.collider.gameObject);
             }
             else if(hitSquare.collider != null) {
@@ -40,26 +47,48 @@ public class InputManagerScript : MonoBehaviour
     }
 
     void HandlePieceSelection(GameObject hitPiece) {
-        if (hitPiece != selectedPiece) {
-            ResetHightlight(selectedPiece);
-            selectedPiece = hitPiece;
-            HighlightPiece(selectedPiece);
-            Transform piecePosition = selectedPiece.GetComponent<PieceInterface>().CurrentSquare;
-            // Debug.Log($"{selectedPiece.name} selected on {piecePosition.name}");
-        }
-        else  {
-            ResetHightlight(selectedPiece);
+    // Check if it's the correct player's turn
+    if (selectedPiece == null && !gameLogicManagerScript.CheckTurn(hitPiece)) {
+        return;
+    }
+
+    PieceInterface hitPieceInterface = hitPiece.GetComponent<PieceInterface>();
+    PieceInterface selectedpieceInterface = selectedPiece ? selectedPiece.GetComponent<PieceInterface>() : null;
+
+    
+    if (selectedpieceInterface != null) {
+        
+        if ((hitPieceInterface.IsWhite && !selectedpieceInterface.IsWhite) || 
+            (!hitPieceInterface.IsWhite && selectedpieceInterface.IsWhite)) {
+           
+            selectedpieceInterface.MovePiece(selectedPiece.transform, hitPieceInterface.CurrentSquare.transform);
+
+            ResetHighlight(selectedPiece);
+            gameLogicManagerScript.SwitchTurn();
             selectedPiece = null;
+            return;
         }
     }
+
+    
+    if (hitPiece != selectedPiece) {
+        ResetHighlight(selectedPiece);
+        selectedPiece = hitPiece;       
+        HighlightPiece(selectedPiece);
+    } else {
+        ResetHighlight(selectedPiece); 
+        selectedPiece = null;
+    }
+}
+
 
     void HandleSquareSelection(Transform hitSquare) {
         if(selectedPiece) {
             targetSquare = hitSquare;
-            // Debug.Log("Target Square is " + targetSquare.name + selectedPiece);
             PieceInterface pieceInterface = selectedPiece.GetComponent<PieceInterface>();
             pieceInterface.MovePiece(selectedPiece.transform, targetSquare.transform);
-            ResetHightlight(selectedPiece);
+            ResetHighlight(selectedPiece);
+            gameLogicManagerScript.SwitchTurn();
             selectedPiece = null;
         }
         else {
@@ -77,7 +106,7 @@ public class InputManagerScript : MonoBehaviour
         piece.transform.localScale = highlightScale;
     }
 
-    void ResetHightlight(GameObject piece) {
+    void ResetHighlight(GameObject piece) {
         if(piece == null) {
             return;
         }

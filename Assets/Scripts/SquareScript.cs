@@ -6,6 +6,7 @@ public class SquareScript : MonoBehaviour
 {
     public int rank;
     public char file;
+    public GameObject occupiedBy = null;
     // Start is called before the first frame update
     void Start()
     {

@@ -2,11 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KingScript : MonoBehaviour, PieceInterface
+public class KingScript : PieceBase
 {
-    public Transform CurrentSquare {get; set;}
-    public bool IsWhite {get; set;}
-    public GameLogicManagerScript gameLogicManagerScript;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,30 +14,5 @@ public class KingScript : MonoBehaviour, PieceInterface
     void Update()
     {
         
-    }
-    public bool MovePiece(Transform piece, Transform targetSquare) {
-
-        PieceInterface pieceInterface = piece.GetComponent<PieceInterface>();
-        SquareScript originalSquareScript = pieceInterface.CurrentSquare.gameObject.GetComponent<SquareScript>();
-        SquareScript targetSquareScript = targetSquare.gameObject.GetComponent<SquareScript>();
-
-        if(targetSquareScript.occupiedBy==null) {
-            piece.transform.position = targetSquare.position;
-
-            originalSquareScript.occupiedBy = null;
-            targetSquareScript.occupiedBy = piece.gameObject;
-
-            Debug.Log($"{piece.name} moved from {pieceInterface.CurrentSquare} to {targetSquare}");
-            pieceInterface.CurrentSquare = targetSquare;
-        }
-        else {
-            bool captureSuccesful = gameLogicManagerScript.CapturePiece(piece.gameObject, targetSquareScript.occupiedBy);
-            if(captureSuccesful) {
-                originalSquareScript.occupiedBy = null;
-                targetSquareScript.occupiedBy = piece.gameObject;
-            }
-        }
-        return true;
-
     }
 }

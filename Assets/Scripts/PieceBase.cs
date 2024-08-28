@@ -46,6 +46,7 @@ public abstract class PieceBase : MonoBehaviour, PieceInterface {
                 targetSquareScript.occupiedBy = piece.gameObject;
             }
         }
+        gameLogicManagerScript.ClearAllHighlights();
         return true;
 
     }

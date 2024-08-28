@@ -50,7 +50,7 @@ public class BoardScript : MonoBehaviour
                     Color colorDark = new(112/255f, 102/255f, 119/255f);
                     Color colorLight = new(204/255f, 183/255f, 174/255f);
 
-                    renderer.color = (x+y) % 2 !=0 ? colorLight : colorDark;
+                    renderer.color = (x+y) % 2 ==0 ? colorLight : colorDark;
                 }
             }
         }

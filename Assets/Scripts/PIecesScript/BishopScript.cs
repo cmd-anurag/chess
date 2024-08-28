@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
 
 public class BishopScript :  PieceBase
@@ -12,6 +11,7 @@ public class BishopScript :  PieceBase
         
     }
     public override List<string> GenerateMoves(GameObject piece, GameObject currentSquare) {
+        gameLogicManagerScript.ClearAllHighlights();
         List<string> legalMoves = new();
         (int, int)[] directions = {(1, 1), (1, -1), (-1, 1), (-1, -1)};
         SquareScript squareScript = currentSquare.GetComponent<SquareScript>();
@@ -38,19 +38,22 @@ public class BishopScript :  PieceBase
                     }
                     // different color - can be captured
                     legalMoves.Add(newSquare.name);
+                    gameLogicManagerScript.HighLightSquare(newSquare);
                     break;
                 }
                 // empty square
+                gameLogicManagerScript.HighLightSquare(newSquare);
                 legalMoves.Add(newSquare.name);
             }
             // reset them to  current square positions
             file = squareScript.file;
             rank = squareScript.rank;
         }
-        foreach (string square in legalMoves)
-        {
-            Debug.Log(square);
-        }
+        
+        // foreach (string square in legalMoves)
+        // {
+        //     Debug.Log(square);
+        // }
         return legalMoves;
 
     }

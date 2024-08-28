@@ -8,17 +8,17 @@ public class InputManagerScript : MonoBehaviour
     public LayerMask piecesLayer;
     public LayerMask boardLayer;
     // TODO - Use the tag instead of public fields for GameLogicManager and its script.
-    [SerializeField]private GameObject gameLogicManager;
+
     private GameLogicManagerScript gameLogicManagerScript;
-    
     private GameObject selectedPiece = null;
     private Transform targetSquare = null;
+
     // Start is called before the first frame update
     void Start()
     {
         boardLayer = LayerMask.GetMask("Board");
         piecesLayer = LayerMask.GetMask("Pieces");
-        gameLogicManagerScript = gameLogicManager.GetComponent<GameLogicManagerScript>();
+        gameLogicManagerScript = GameObject.FindGameObjectWithTag("GameLogicManagerTag").GetComponent<GameLogicManagerScript>();
     }
 
     // Update is called once per frame
@@ -34,9 +34,7 @@ public class InputManagerScript : MonoBehaviour
             RaycastHit2D hitPiece = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, piecesLayer);
             RaycastHit2D hitSquare = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, boardLayer);
             
-
             if(hitPiece.collider != null) {
-
                 HandlePieceSelection(hitPiece.collider.gameObject);
             }
             else if(hitSquare.collider != null) {
@@ -61,9 +59,12 @@ public class InputManagerScript : MonoBehaviour
         if ((hitPieceInterface.IsWhite && !selectedpieceInterface.IsWhite) || 
             (!hitPieceInterface.IsWhite && selectedpieceInterface.IsWhite)) {
            
-            selectedpieceInterface.MovePiece(selectedPiece.transform, hitPieceInterface.CurrentSquare.transform);
+            bool moveSuccessful = selectedpieceInterface.MovePiece(selectedPiece.transform, hitPieceInterface.CurrentSquare.transform);
 
             ResetHighlight(selectedPiece);
+            if(!moveSuccessful) {
+                return;
+            }
             gameLogicManagerScript.SwitchTurn();
             selectedPiece = null;
             return;
@@ -75,6 +76,12 @@ public class InputManagerScript : MonoBehaviour
         ResetHighlight(selectedPiece);
         selectedPiece = hitPiece;       
         HighlightPiece(selectedPiece);
+        // Debug.Log(selectedPiece);
+        // PieceBase pieceBase = selectedPiece.GetComponent<PieceBase>();
+        // Debug.Log(pieceBase);
+        // pieceBase
+        selectedpieceInterface = selectedPiece.GetComponent<PieceInterface>();
+        selectedPiece.GetComponent<PieceBase>().GenerateMoves(selectedPiece, selectedpieceInterface.CurrentSquare.gameObject);
     } else {
         ResetHighlight(selectedPiece); 
         selectedPiece = null;
@@ -86,7 +93,10 @@ public class InputManagerScript : MonoBehaviour
         if(selectedPiece) {
             targetSquare = hitSquare;
             PieceInterface pieceInterface = selectedPiece.GetComponent<PieceInterface>();
-            pieceInterface.MovePiece(selectedPiece.transform, targetSquare.transform);
+            bool moveSuccessful = pieceInterface.MovePiece(selectedPiece.transform, targetSquare.transform);
+            if(!moveSuccessful) {
+                return;
+            }
             ResetHighlight(selectedPiece);
             gameLogicManagerScript.SwitchTurn();
             selectedPiece = null;

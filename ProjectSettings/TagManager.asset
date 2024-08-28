@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - GameLogicManagerTag
+  - BoardTag
   layers:
   - Default
   - TransparentFX

@@ -6,6 +6,7 @@ using UnityEngine;
 public class BoardScript : MonoBehaviour
 {
     public GameObject squarePrefab;
+    private Dictionary<(char, int), GameObject> squareDictionary = new Dictionary<(char, int), GameObject>();
     public int gridSize = 8;
     public float squareSize = 1.0f;
 
@@ -40,6 +41,7 @@ public class BoardScript : MonoBehaviour
                 if(squareScript!=null) {
                     squareScript.rank = y+1;
                     squareScript.file = file;
+                    squareDictionary[(file, y+1)] = square;
                 }
 
                 // Setting the color of each square
@@ -57,5 +59,15 @@ public class BoardScript : MonoBehaviour
     void centerBoard() {
         float halfSize = gridSize*squareSize/2f;
         transform.position = new Vector3(-halfSize + (squareSize/2f), -halfSize + (squareSize/2f), 0);
+    }
+    public GameObject GetSquareAt(char file, int rank) {
+        if(file > 'h' || file < 'a' || rank < 1 || rank > 8) {
+            return null;
+        }
+        
+        if(squareDictionary.TryGetValue((file, rank), out GameObject square)) {
+            return square;
+        }
+        return null;
     }
 }

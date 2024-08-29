@@ -15,6 +15,7 @@ public class KingScript : PieceBase
         List<string> legalMoves = new();
         (int, int)[] directions = {(1, 1), (1, -1), (-1, 1), (-1, -1), (1, 0), (-1, 0), (0, 1), (0, -1)};
         SquareScript squareScript = currentSquare.GetComponent<SquareScript>();
+        bool pieceIsWhite = piece.GetComponent<PieceBase>().IsWhite;
         char file;
         int rank;
 
@@ -29,7 +30,10 @@ public class KingScript : PieceBase
             }
             SquareScript newSquareScript = newSquare.GetComponent<SquareScript>();
             if(newSquareScript.occupiedBy != null) {
-                
+                bool occupiedByWhite = newSquareScript.occupiedBy.GetComponent<PieceBase>().IsWhite;
+                if((pieceIsWhite && occupiedByWhite) || (!pieceIsWhite && !occupiedByWhite)) {
+                    continue;
+                }
                 gameLogicManagerScript.HighlightCapture(newSquare);
                 legalMoves.Add(newSquare.name);
                 continue;

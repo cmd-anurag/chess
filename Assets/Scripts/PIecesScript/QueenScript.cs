@@ -40,7 +40,7 @@ public class QueenScript : PieceBase
                         break;
                     }
                     // different color - can be captured
-                    gameLogicManagerScript.HighLightSquare(newSquare);
+                    gameLogicManagerScript.HighlightCapture(newSquare);
                     legalMoves.Add(newSquare.name);
                     break;
                 }

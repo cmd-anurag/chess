@@ -53,6 +53,11 @@ public class GameLogicManagerScript : MonoBehaviour
         square.GetComponent<SpriteRenderer>().color = highlightColor;
     }
 
+    public void HighlightCapture(GameObject square) {
+        highlightedSquares.Add(square);
+        square.GetComponent<SpriteRenderer>().color = Color.red;
+    }
+
     public void ClearAllHighlights() {
         SpriteRenderer renderer;
         Color colorDark = new(112/255f, 102/255f, 119/255f);

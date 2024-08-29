@@ -38,7 +38,7 @@ public class BishopScript :  PieceBase
                     }
                     // different color - can be captured
                     legalMoves.Add(newSquare.name);
-                    gameLogicManagerScript.HighLightSquare(newSquare);
+                    gameLogicManagerScript.HighlightCapture(newSquare);
                     break;
                 }
                 // empty square

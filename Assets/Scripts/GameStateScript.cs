@@ -204,10 +204,16 @@ public void DisplayBitboard(ulong value) {
     System.Text.StringBuilder stringBuilder = new();
     System.Text.StringBuilder rowBuilder = new();
     for(int i = 0; i < 64; ++i) {
-        // TODO - Implement this
+        rowBuilder.Insert(0, binarystring[i] + " ");
+        if((i + 1) % 8 == 0) {
+            stringBuilder.Append(rowBuilder.ToString());
+            stringBuilder.AppendLine();
+            rowBuilder.Clear(); // Clear the rowBuilder for the next row
+        }
     }
     Debug.Log(stringBuilder.ToString());
 }
+
 
 
 
@@ -241,7 +247,7 @@ void InitializeBitboards() {
     // Start is called before the first frame update
     void Start()
     {
-        DisplayBitboard(rookAttacks[0]);
+        DisplayBitboard(rookAttacks[63]);
     }
 
     // Update is called once per frame

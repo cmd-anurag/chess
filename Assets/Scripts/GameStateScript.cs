@@ -60,7 +60,7 @@ public ulong occupiedBitboard;
         for (int i = 0; i < 64; i++) {
             square = 1UL << i;
             rookAttacks[i] = GenerateRookAttacks(square);
-            // bishopAttacks[i] = GenerateBishopAttacks(square);
+            bishopAttacks[i] = GenerateBishopAttacks(square);
             // queenAttacks[i] = GenerateQueenAttacks(square);
             // kingAttacks[i] = GenerateKingAttacks(square);
             // knightAttacks[i] = GenerateKnightAttacks(square);
@@ -119,7 +119,11 @@ public ulong occupiedBitboard;
         return attacks;
     }
     ulong GenerateBishopAttacks(ulong square) {
-        // 7 is 
+        // 9 is top right (left shift)
+        // 7 is top left (left shift)
+        // -9 is bottom left (right shift)
+        // -7 is bottom right (right shift)
+
         ulong attacks = 0;
         int[] directions = {7, 9, -7, -9};
         ulong original = square;
@@ -127,10 +131,43 @@ public ulong occupiedBitboard;
         foreach (int direction in directions)
         {   
             square = original;
-            while(true) {
-                // TODO - Immplement this
+            while(square != 0) {
+                
+                if(direction == 9) {
+                    if(((square & 0xFF00000000000000UL) != 0) || ((square & 0x8080808080808080UL) != 0)) {
+                        attacks |= square;
+                        break;
+                    }
+                    square <<= direction;
+                    attacks |= square;
+                }
+                else if(direction == 7) {
+                    if(((square & 0xFF00000000000000UL) != 0) || ((square & 0x0101010101010101UL) != 0)) {
+                        attacks |= square;
+                        break;
+                    }
+                    square <<= direction;
+                    attacks |= square;
+                }
+                else if(direction == -9) {
+                    if(((square & 0x00000000000000FF) != 0) || ((square & 0x0101010101010101UL) != 0)) {
+                        attacks |= square;
+                        break;
+                    }
+                    square >>= -direction;
+                    attacks |= square;
+                }
+                else if(direction == -7) {
+                    if(((square & 0x00000000000000FF) != 0) || ((square & 0x8080808080808080UL) != 0)) {
+                        attacks |= square;
+                        break;
+                    }
+                    square >>= -direction;
+                    attacks |= square;
+                }
             }
         }
+        attacks &= ~original;
         return attacks;
     }
 
@@ -200,7 +237,7 @@ public void SetPieceBitboard(PieceType pieceType, ulong value) {
 public void DisplayBitboard(ulong value) {
     string binarystring = Convert.ToString((long)value, 2).PadLeft(64, '0');
    
-    Debug.Log(binarystring);
+    // Debug.Log(binarystring);
     System.Text.StringBuilder stringBuilder = new();
     System.Text.StringBuilder rowBuilder = new();
     for(int i = 0; i < 64; ++i) {
@@ -208,7 +245,7 @@ public void DisplayBitboard(ulong value) {
         if((i + 1) % 8 == 0) {
             stringBuilder.Append(rowBuilder.ToString());
             stringBuilder.AppendLine();
-            rowBuilder.Clear(); // Clear the rowBuilder for the next row
+            rowBuilder.Clear();
         }
     }
     Debug.Log(stringBuilder.ToString());
@@ -247,7 +284,10 @@ void InitializeBitboards() {
     // Start is called before the first frame update
     void Start()
     {
-        DisplayBitboard(rookAttacks[63]);
+        foreach (ulong bitboard in bishopAttacks)
+        {
+            DisplayBitboard(bitboard);
+        }
     }
 
     // Update is called once per frame

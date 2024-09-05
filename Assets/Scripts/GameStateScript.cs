@@ -24,7 +24,7 @@ public enum PieceType {
 
 public class GameStateScript : MonoBehaviour
 {
-
+// individual piece bitboards
 private ulong whitePawns;
 private ulong blackPawns;
 private ulong whiteRooks;
@@ -61,10 +61,90 @@ public ulong occupiedBitboard;
             square = 1UL << i;
             rookAttacks[i] = GenerateRookAttacks(square);
             bishopAttacks[i] = GenerateBishopAttacks(square);
-            // queenAttacks[i] = GenerateQueenAttacks(square);
-            // kingAttacks[i] = GenerateKingAttacks(square);
-            // knightAttacks[i] = GenerateKnightAttacks(square);
+            queenAttacks[i] = GenerateQueenAttacks(i);
+            kingAttacks[i] = GenerateKingAttacks(square);
+            knightAttacks[i] = GenerateKnightAttacks(square);
         }
+    }
+
+    ulong GenerateKingAttacks(ulong square) {
+        ulong attacks = 0;
+        ulong rank1mask = 0x00000000000000FFUL;
+        ulong rank8mask = 0xFF00000000000000UL;
+        ulong afile = 0x0101010101010101UL;
+        ulong hfile = 0x8080808080808080UL;
+
+        // left shift 8 (up)
+        attacks |= (square & ~rank8mask) << 8;
+
+        // left shift 1 (right)
+        attacks |= (square & ~hfile) << 1;
+
+        // left shift 9 (top right)
+        attacks |= (square & ~(rank8mask | hfile)) << 9;
+        
+        // left shift 7 (top left)
+        attacks |= (square & ~(rank8mask | afile)) << 7;
+
+        // right shift 1 (left)
+        attacks |= (square & ~afile) >> 1;
+
+        // right shift 8 (down)
+        attacks |= (square & ~rank1mask) >> 8;
+
+        // right shift 7 (bottom right)
+        attacks |= (square & ~(rank1mask | hfile)) >> 7;
+
+        // right shift 9 (bottom left)
+        attacks |= (square & ~(rank1mask | afile)) >> 9;
+
+        return attacks;
+    }
+
+    ulong GenerateKnightAttacks(ulong square) {
+        ulong attacks = 0;
+        // border ranks
+        ulong rank1mask = 0x00000000000000FFUL;
+        ulong rank2mask = 0x000000000000FF00UL;
+        ulong rank7mask = 0x00FF000000000000UL;
+        ulong rank8mask = 0xFF00000000000000UL;
+
+        // border files
+        ulong afile = 0x0101010101010101UL;
+        ulong bfile = 0x0202020202020202UL;
+        ulong hfile = 0x8080808080808080UL;
+        ulong gfile = 0x4040404040404040UL;
+
+        // left shift 17 (2 up 1 right)
+        attacks |= (square & ~(rank7mask | rank8mask | hfile)) << 17;
+
+        // left shift 15 (2 up 1 left)
+        attacks |= (square & ~(rank7mask | rank8mask | afile)) << 15;
+
+        // left shift 10 (1 up 2 right)
+        attacks |= (square & ~(rank8mask | gfile | hfile)) << 10;
+
+        // left shift 6 (1 up 2 left)
+        attacks |= (square & ~(rank8mask | afile | bfile)) << 6;
+
+        // right shift 17 (2 down 1 left)
+        attacks |= (square & ~(rank1mask | rank2mask | afile)) >> 17;
+
+        // right shift 15 (2 down 1 right)
+        attacks |= (square & ~(rank1mask | rank2mask | hfile)) >> 15;
+
+        // right shift 10 (1 down 2 left)
+        attacks |= (square & ~(rank1mask | afile | bfile)) >> 10;
+
+        // right shift 6 (1 down 2 right)
+        attacks |= (square & ~(rank1mask | gfile | hfile)) >> 6;
+
+
+        return attacks;
+    }
+
+    ulong GenerateQueenAttacks(int squareIndex) {
+        return rookAttacks[squareIndex] | bishopAttacks[squareIndex];
     }
 
     ulong GenerateRookAttacks(ulong square) {
@@ -284,10 +364,7 @@ void InitializeBitboards() {
     // Start is called before the first frame update
     void Start()
     {
-        foreach (ulong bitboard in bishopAttacks)
-        {
-            DisplayBitboard(bitboard);
-        }
+        
     }
 
     // Update is called once per frame
